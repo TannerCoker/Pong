@@ -8,6 +8,8 @@ Screen = (1500, 900)
 window = pg.display.set_mode(Screen)
 buttonWidth = 200
 buttonHeight = 75
+
+clock = pg.time.Clock()
 class button():
     def __init__(self, color, x,y,width,height,text =''):
         self.color=color
@@ -34,7 +36,25 @@ class button():
                 return True
         return False
 
+class ball():
+    speedx = 7
+    speedy = 7
+    def __init__(self, color, x, y, radius):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.radius = radius
 
+    def draw(self, window):
+        pg.draw.circle(window, self.color, (self.x,self.y),self.radius)
+
+    def updateBall(self):
+        self.x += self.speedx
+        self.y += self.speedy
+        if self.x+self.radius > Screen[0] or self.x-self.radius < 0:
+            self.speedx *= -1
+        if self.y+self.radius > Screen[1] or self.y-self.radius < 0:
+            self.speedy *= -1
 
 singleButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]/2-150,buttonWidth,buttonHeight, '1 Player')
 multiButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]/2,buttonWidth,buttonHeight,'2 Player')
@@ -42,10 +62,11 @@ quitButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]-buttonHeight-
 font = pg.font.SysFont('comicsans', 60)
 title = font.render('PONG', 1, (255,255,255))
 def mainMenu():
-
+    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 20)
     viewing = True
     while viewing:
         window.fill((35,35,35))
+        b.draw(window)
         singleButton.draw(window)
         multiButton.draw(window)
         quitButton.draw(window)
@@ -58,14 +79,13 @@ def mainMenu():
                 quit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if quitButton.isOver(pos):
+                    del b
                     pg.quit()
                     quit()
                 if singleButton.isOver(pos):
+                    del b
                     viewing = False
-                    print('clicked')
                     gameRun()
-
-
             if event.type == pg.MOUSEMOTION:
                 if singleButton.isOver(pos):
                     singleButton.color = (255,0,0)
@@ -75,20 +95,23 @@ def mainMenu():
                     quitButton.color = (255,0,0)
                 else:
                     quitButton.color = (0,0,255)
-
+        b.updateBall()
+        clock.tick(60)
         pg.display.update()
 
 def gameRun():
+    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 20)
     viewing = True
-    print('run')
     while viewing:
-        window.fill((255,255,255))
+        window.fill((35,35,35))
+        b.draw(window)
+        b.updateBall()
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
-
         pg.display.update()
+        clock.tick(60)
 
 def main():
 
