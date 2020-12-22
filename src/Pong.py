@@ -53,9 +53,11 @@ class ball(pg.Rect):
         self.color = color
         self.radius = radius
 
+    #draws the ball to the window
     def draw(self, window):
         pg.draw.ellipse(window, self.color, self, self.radius)
 
+    #moves the balls x,y pos. If it hits a boundary then it bounces off of it.
     def updateBall(self):
         self.x += self.speedx
         self.y += self.speedy
@@ -64,6 +66,7 @@ class ball(pg.Rect):
         if self.y+self.radius >= Screen[1] or self.y <= 0:
             self.speedy *= -1
 
+    #checks to see if it hits one of the paddles. If so, then it bounces off of it
     def checkCollision(self, rect1, rect2):
         if self.colliderect(rect1) or self.colliderect(rect2):
             self.speedx *= -1
@@ -166,6 +169,12 @@ def singleRun():
         opponent.draw(window)
         b.checkCollision(player,opponent)
         player.update()
+        opponent.speed = 0
+        if opponent.top < b.y:
+            opponent.speed += 7
+        if opponent.bottom > b.y:
+            opponent.speed -= 7
+        opponent.update()
         b.updateBall()
 
         pg.display.update()
