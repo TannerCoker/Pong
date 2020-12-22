@@ -45,37 +45,46 @@ class button():
 
 
 #this class will be the ball that is bounced around during gameplay. It will bounce off of the walls and off of the paddles
-class ball():
+class ball(pg.Rect):
     speedx = 7
     speedy = 7
     def __init__(self, color, x, y, radius):
+        super().__init__(x, y,radius,radius)
         self.color = color
-        self.x = x
-        self.y = y
         self.radius = radius
 
     def draw(self, window):
-        pg.draw.circle(window, self.color, (self.x,self.y),self.radius)
+        pg.draw.ellipse(window, self.color, self, self.radius)
 
     def updateBall(self):
         self.x += self.speedx
         self.y += self.speedy
-        if self.x+self.radius >= Screen[0] or self.x-self.radius <= 0:
+        if self.x+self.radius >= Screen[0] or self.x <= 0:
             self.speedx *= -1
-        if self.y+self.radius >= Screen[1] or self.y-self.radius <= 0:
+        if self.y+self.radius >= Screen[1] or self.y <= 0:
             self.speedy *= -1
 
+    def checkCollision(self, rect1, rect2):
+        if self.colliderect(rect1) or self.colliderect(rect2):
+            self.speedx *= -1
 
 
 
 class paddle(pg.Rect):
-    speed = 7
+    speed = 0
     def __init__(self, color, x, y):
         super().__init__(x,y-75,10,150)
         self.color = color
 
     def draw(self, window):
         pg.draw.rect(window, self.color, self)
+
+    def update(self):
+        self.y += self.speed
+        if self.top <= 0:
+            self.top = 0
+        if self.bottom >= Screen[1]:
+            self.bottom = Screen[1]
 
 
 
@@ -87,7 +96,7 @@ def mainMenu():
     quitButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]-buttonHeight-75, buttonWidth, buttonHeight, 'Exit')
     title = font.render('PONG', 1, (255,255,255))
 
-    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 15)
+    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
     viewing = True
     while viewing:
         window.fill((35,35,35))
@@ -128,7 +137,7 @@ def mainMenu():
 
 
 def singleRun():
-    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 15)
+    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
     player = paddle((255, 207, 33), 20, Screen[1]/2)
     opponent = paddle((48, 246, 252), Screen[0]-30, Screen[1]/2)
     viewing = True
@@ -138,13 +147,27 @@ def singleRun():
             if event.type == pg.QUIT:
                 pg.quit()
                 quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_w:
+                    player.speed -= 7
+                if event.key == pg.K_s:
+                    player.speed += 7
+            if event.type == pg.KEYUP:
+                if event.key == pg.K_w:
+                    player.speed += 7
+                if event.key == pg.K_s:
+                    player.speed -= 7
 
         window.fill((35,35,35))
         pg.draw.line(window, (100,100,100), (Screen[0]/2,0), (Screen[0]/2,Screen[1]), 3)
+
         b.draw(window)
         player.draw(window)
         opponent.draw(window)
+        b.checkCollision(player,opponent)
+        player.update()
         b.updateBall()
+
         pg.display.update()
         clock.tick(60)
 
