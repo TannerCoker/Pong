@@ -2,6 +2,7 @@
 '''
 
 import pygame as pg
+import random
 pg.init()
 
 Screen = (1500, 900)
@@ -43,11 +44,12 @@ class button():
 
 
 
-
 #this class will be the ball that is bounced around during gameplay. It will bounce off of the walls and off of the paddles
 class ball(pg.Rect):
-    speedx = 7
-    speedy = 7
+    speedx = 10
+    speedIncrease = 0
+    hitCounter = 0
+    speedy = 8
     def __init__(self, color, x, y, radius):
         super().__init__(x, y,radius,radius)
         self.color = color
@@ -59,7 +61,7 @@ class ball(pg.Rect):
 
     #moves the balls x,y pos. If it hits a boundary then it bounces off of it.
     def updateBall(self):
-        self.x += self.speedx
+        self.x += self.speedx + self.speedIncrease
         self.y += self.speedy
         if self.x+self.radius >= Screen[0] or self.x <= 0:
             self.speedx *= -1
@@ -70,9 +72,31 @@ class ball(pg.Rect):
     def checkCollision(self, rect1, rect2):
         if self.colliderect(rect1) or self.colliderect(rect2):
             self.speedx *= -1
+            self.hitCounter += 1
+            if self.hitCounter == 10:
+                self.hitCounter = 0
+                self.speedIncrease += 1
+            if self.x < Screen[0]/2 and self.y > rect1.center[1]:
+                self.speedy = 7
+            elif self.x < Screen[0]/2 and self.y < rect1.center[1]:
+                self.speedy = -7
+            elif self.x > Screen[0]/2 and self.y > rect2.center[1]:
+                self.speedy = 7
+            elif self.x > Screen[0]/2 and self.y < rect2.center[1]:
+                self.speedy = -7
+
+    def checkWallHit(self):
+        if self.x+self.radius >= Screen[0] or self.x <= 0:
+            self.speedIncrease = 0
+            return True
+        return False
+
+    def newDir(self):
+        self.speedx *= random.choice((-1,1))
+        self.speedy *= random.choice((-1,1))
 
 
-
+#class paddle is the paddle game object. They extend rectangles so that I can add a function specifically for updating the object.
 class paddle(pg.Rect):
     speed = 0
     def __init__(self, color, x, y):
@@ -82,6 +106,7 @@ class paddle(pg.Rect):
     def draw(self, window):
         pg.draw.rect(window, self.color, self)
 
+    #adds the speed value to the y value for the paddle. Stops it from going off of the bounds.
     def update(self):
         self.y += self.speed
         if self.top <= 0:
@@ -93,17 +118,19 @@ class paddle(pg.Rect):
 
 
 font = pg.font.SysFont('comicsans', 60)
+scoreFont = pg.font.SysFont('comicsans', 200)
+
 def mainMenu():
     singleButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]/2-150,buttonWidth,buttonHeight, '1 Player')
     multiButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]/2,buttonWidth,buttonHeight,'2 Player')
     quitButton = button((0,0,255), Screen[0]/2-buttonWidth/2,Screen[1]-buttonHeight-75, buttonWidth, buttonHeight, 'Exit')
     title = font.render('PONG', 1, (255,255,255))
 
-    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
+    pong = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
     viewing = True
     while viewing:
         window.fill((35,35,35))
-        b.draw(window)
+        pong.draw(window)
         singleButton.draw(window)
         multiButton.draw(window)
         quitButton.draw(window)
@@ -116,11 +143,11 @@ def mainMenu():
                 quit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if quitButton.isOver(pos):
-                    del b
+                    del pong
                     pg.quit()
                     quit()
                 if singleButton.isOver(pos):
-                    del b
+                    del pong
                     viewing = False
                     singleRun()
             if event.type == pg.MOUSEMOTION:
@@ -132,7 +159,8 @@ def mainMenu():
                     quitButton.color = (255,0,0)
                 else:
                     quitButton.color = (0,0,255)
-        b.updateBall()
+
+        pong.updateBall()
         clock.tick(60)
         pg.display.update()
 
@@ -140,9 +168,13 @@ def mainMenu():
 
 
 def singleRun():
-    b = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
+    pong = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
     player = paddle((255, 207, 33), 20, Screen[1]/2)
     opponent = paddle((48, 246, 252), Screen[0]-30, Screen[1]/2)
+    playerScore = opponentScore = 0
+
+
+
     viewing = True
     while viewing:
 
@@ -163,19 +195,49 @@ def singleRun():
 
         window.fill((35,35,35))
         pg.draw.line(window, (100,100,100), (Screen[0]/2,0), (Screen[0]/2,Screen[1]), 3)
+        scoreString = str(playerScore)
+        scoreDisplay = scoreFont.render(scoreString, 1 , (100,100,100))
+        window.blit(scoreDisplay, (Screen[0]/4-scoreDisplay.get_width(), Screen[1]/2-scoreDisplay.get_height()/2))
 
-        b.draw(window)
+        scoreString = str(opponentScore)
+        scoreDisplay = scoreFont.render(scoreString, 1 , (100,100,100))
+        window.blit(scoreDisplay, (Screen[0]-Screen[0]/4-scoreDisplay.get_width(), Screen[1]/2-scoreDisplay.get_height()/2))
+
+        pong.draw(window)
         player.draw(window)
         opponent.draw(window)
-        b.checkCollision(player,opponent)
-        player.update()
-        opponent.speed = 0
-        if opponent.top < b.y:
-            opponent.speed += 7
-        if opponent.bottom > b.y:
-            opponent.speed -= 7
-        opponent.update()
-        b.updateBall()
+        if playerScore < 7 and opponentScore < 1:
+
+            pong.checkCollision(player,opponent)
+            player.update()
+            opponent.speed = 0
+            if opponent.top < pong.center[1]:
+                opponent.speed += 7
+            elif opponent.bottom > pong.center[1]:
+                opponent.speed -= 7
+            pong.updateBall()
+            opponent.update()
+
+            if pong.checkWallHit():
+                if pong.x < Screen[0]/2:
+                    opponentScore += 1
+                else:
+                    playerScore += 1
+                pong.center = (Screen[0]/2,Screen[1]/2)
+                player.center = (player.center[0], Screen[1]/2)
+                opponent.center = (opponent.center[0], Screen[1]/2)
+                pong.newDir()
+
+        else:
+            endDisplay = ''
+            endRect = pg.Rect(Screen[0]/2-250,Screen[1]/2-150, 500,300)
+            pg.draw.rect(window, (100,100,100), endRect,0)
+            if playerScore == 7:
+                endDisplay = 'Player has won!'
+            else:
+                endDisplay = 'Bot has won!'
+            endMessage = font.render(endDisplay, 1, (35,35,35))
+            window.blit(endMessage, (Screen[0]/2-endMessage.get_width()/2, endRect.y + endMessage.get_height()+5))
 
         pg.display.update()
         clock.tick(60)
