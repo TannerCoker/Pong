@@ -222,8 +222,8 @@ def singleRun():
 
     #makes the rectangle that the menu&replay button will be in along with button creation.
     endRect = pg.Rect(Screen[0]/2-250,Screen[1]/2-150, 500,300)
-    menuButton = button((35,35,35), endRect.x + 20, endRect.y + 200, 150, 75, 'Menu', (100,100,100))
-    replayButton = button ((35,35,35), endRect.x+endRect.width - 170, endRect.y + 200, 150, 75, 'Replay', (100,100,100))
+    menuButton = button((255, 207, 33), endRect.x + 20, endRect.y + 200, 150, 75, 'Menu')
+    replayButton = button ((48, 246, 252), endRect.x+endRect.width - 170, endRect.y + 200, 150, 75, 'Replay')
 
     #singleplayer game loop. Runs while it is being viewed.
     viewing = True
@@ -269,13 +269,13 @@ def singleRun():
             #highlights the button when being hovered over.
             if event.type == pg.MOUSEMOTION:
                 if replayButton.isOver(pos):
-                    replayButton.color = (70,70,70)
+                    replayButton.color = (2, 201, 207)
                 else:
-                    replayButton.color = (35,35,35)
+                    replayButton.color = (48, 246, 252)
                 if menuButton.isOver(pos):
-                    menuButton.color = (70,70,70)
+                    menuButton.color = (222, 174, 0)
                 else:
-                    menuButton.color = (35,35,35)
+                    menuButton.color = (255, 207, 33)
         #creates the background and draws the score to the window.
         window.fill((35,35,35))
         pg.draw.line(window, (100,100,100), (Screen[0]/2,0), (Screen[0]/2,Screen[1]), 3)
@@ -326,7 +326,7 @@ def singleRun():
             gameDone = True
             endDisplay = ''
             endMessage = ''
-            pg.draw.rect(window, (100,100,100), endRect,0)
+            pg.draw.rect(window, (60,60,60), endRect,0)
             if playerScore == 7:
                 endDisplay = 'Player has won!'
                 endMessage = font.render(endDisplay, 1, (255, 207, 33))
@@ -352,8 +352,8 @@ def multiRun():
 
     #makes the rectangle that the menu&replay button will be in along with button creation.
     endRect = pg.Rect(Screen[0]/2-250,Screen[1]/2-150, 500,300)
-    menuButton = button((35,35,35), endRect.x + 20, endRect.y + 200, 150, 75, 'Menu', (100,100,100))
-    replayButton = button ((35,35,35), endRect.x+endRect.width - 170, endRect.y + 200, 150, 75, 'Replay', (100,100,100))
+    menuButton = button((255, 207, 33), endRect.x + 20, endRect.y + 200, 150, 75, 'Menu')
+    replayButton = button ((48, 246, 252), endRect.x+endRect.width - 170, endRect.y + 200, 150, 75, 'Replay')
 
     #multiplayer game loop. Runs while it is being viewed.
     viewing = True
@@ -407,13 +407,13 @@ def multiRun():
             #highlights the button when being hovered over.
             if event.type == pg.MOUSEMOTION:
                 if replayButton.isOver(pos):
-                    replayButton.color = (70,70,70)
+                    replayButton.color = (2, 201, 207)
                 else:
-                    replayButton.color = (35,35,35)
+                    replayButton.color = (48, 246, 252)
                 if menuButton.isOver(pos):
-                    menuButton.color = (70,70,70)
+                    menuButton.color = (222, 174, 0)
                 else:
-                    menuButton.color = (35,35,35)
+                    menuButton.color = (255, 207, 33)
 
         #creates the background and draws the score to the window.
         window.fill((35,35,35))
@@ -457,7 +457,7 @@ def multiRun():
             gameDone = True
             endDisplay = ''
             endMessage = ''
-            pg.draw.rect(window, (100,100,100), endRect,0)
+            pg.draw.rect(window, (60,60,60), endRect,0)
             if player1Score == 7:
                 endDisplay = 'Player 1 has won!'
                 endMessage = font.render(endDisplay, 1, (255, 207, 33))
