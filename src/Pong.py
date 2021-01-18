@@ -1,7 +1,7 @@
 '''
 @Author Tanner Coker
 
-This my creation of the classic pong game. It will start the game in a simple menu that will display the different game modes and a settings mode.
+This my creation of the classic pong game. It will start the game in a simple menu that will display the 2 game modes and a exit button.
 User can choose to play a singleplayer game against a bot or they can play with another user locally.
 
 
@@ -138,12 +138,12 @@ class paddle(pg.Rect):
 
 
 #displays a the game menu. Provides user with various buttons that will be highlighted when hovering over them.
-#Can choose to either go into a singleplayer game, multiplayer game, settings, or exit the game.
+#Can choose to either go into a singleplayer game, multiplayer game, or exit the game.
 def mainMenu():
     #buttons used navigate the game menu
-    singleButton = button((100,100,100), Screen[0]/2-buttonWidth/2,Screen[1]/2-150,buttonWidth,buttonHeight, '1 Player', (35,35,35))
-    multiButton = button((100,100,100), Screen[0]/2-buttonWidth/2,Screen[1]/2,buttonWidth,buttonHeight,'2 Player', (35,35,35))
-    quitButton = button((100,100,100), Screen[0]/2-buttonWidth/2,Screen[1]-buttonHeight-75, buttonWidth, buttonHeight, 'Exit', (35,35,35))
+    singleButton = button((255, 207, 33), Screen[0]/2-buttonWidth/2,Screen[1]/2-150,buttonWidth,buttonHeight, '1 Player', (35,35,35))
+    multiButton = button((48, 246, 252), Screen[0]/2-buttonWidth/2,Screen[1]/2,buttonWidth,buttonHeight,'2 Player', (35,35,35))
+    quitButton = button((25, 252, 181), Screen[0]/2-buttonWidth/2,Screen[1]/2+150, buttonWidth, buttonHeight, 'Exit', (35,35,35))
 
     #rendering of the title to display on the menu.
     title = titleFont.render('P   NG', 1, (150,150,150))
@@ -194,17 +194,17 @@ def mainMenu():
             #checks to see if a button is being hovered over. If so then it will change the colors to 'highlight' it.
             if event.type == pg.MOUSEMOTION:
                 if singleButton.isOver(pos):
-                    singleButton.color = (125,125,125)
+                    singleButton.color = (222, 174, 0)
                 else:
-                    singleButton.color = (100,100,100)
+                    singleButton.color = (255, 207, 33)
                 if multiButton.isOver(pos):
-                    multiButton.color = (125,125,125)
+                    multiButton.color = (2, 201, 207)
                 else:
-                    multiButton.color = (100,100,100)
+                    multiButton.color = (48, 246, 252)
                 if quitButton.isOver(pos):
-                    quitButton.color = (125,125,125)
+                    quitButton.color = (0, 204, 140)
                 else:
-                    quitButton.color = (100,100,100)
+                    quitButton.color = (25, 252, 181)
 
         pong.updateBall()
         clock.tick(60)
@@ -217,7 +217,7 @@ def singleRun():
     #component creation needed for the game.
     pong = ball((25, 252, 181), Screen[0]/2, Screen[1]/2, 30)
     player = paddle((255, 207, 33), 20, Screen[1]/2)
-    opponent = paddle((48, 246, 252), Screen[0]-30, Screen[1]/2)
+    opponent = paddle((230,230,230), Screen[0]-30, Screen[1]/2)
     playerScore = opponentScore = 0
 
     #makes the rectangle that the menu&replay button will be in along with button creation.
