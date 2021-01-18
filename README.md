@@ -14,4 +14,4 @@ The multplayer mode:
 ![Multiplayer](img/Multiplayer.jpg)
 
 ## Author
-This program is created and worked on by * [Tanner Coker](https://github.com/UrbanFr0sty)
+This program is created and worked on by [Tanner Coker](https://github.com/UrbanFr0sty)
