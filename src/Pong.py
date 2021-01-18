@@ -400,7 +400,7 @@ def multiRun():
                 #resets the game components and scores so that another game starts.
                 if replayButton.isOver(pos):
                     player1.resetPos()
-                    opponent.resetPos()
+                    player2.resetPos()
                     player1Score = 0
                     opponentScore = 0
                     gameDone = False
